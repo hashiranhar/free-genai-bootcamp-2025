@@ -1,52 +1,49 @@
-# Backend Server Technical Sepcs
+# Backend Server Technical Specs
 
 ## Business Goal:
 
-A language learning school wants to build a prototype of learning portal which will act as three things:
+A language learning school wants to build a prototype of a learning portal which will act as three things:
 - Inventory of possible vocabulary that can be learned
-- Act as a  Learning record store (LRS), providing correct and wrong score on practice vocabulary
+- Act as a Learning Record Store (LRS), providing correct and wrong scores on practice vocabulary
 - A unified launchpad to launch different learning apps
 
 ## Technical Requirements
 
-- The backend will be built using Go
+- The backend will be built using FastAPI
 - The database will be SQLite3
-- The API will be built using Gin
--Mage is a task runner for Go.
 - The API will always return JSON
-- There will no authentication or authorization
-- Everything be treated as a single user
+- There will be no authentication or authorization
+- Everything will be treated as a single user
 
 ## Directory Structure
 
 ```text
-backend_go/
-├── cmd/
-│   └── server/
-├── internal/
+backend_fastapi/
+├── app/
 │   ├── models/     # Data structures and database operations
-│   ├── handlers/   # HTTP handlers organized by feature (dashboard, words, groups, etc.)
-│   └── service/    # Business logic
+│   ├── routers/    # API routes organized by feature (dashboard, words, groups, etc.)
+│   ├── services/   # Business logic
+│   └── main.py     # Entry point for the FastAPI application
 ├── db/
 │   ├── migrations/
 │   └── seeds/      # For initial data population
-├── magefile.go
-├── go.mod
+├── requirements.txt
+├── alembic.ini     # For database migrations
 └── words.db
 ```
 
 ## Database Schema
 
-Our database will be a single sqlite database called `words.db` that will be in the root of the project folder of `backend_go`
+Our database will be a single SQLite database called `words.db` that will be in the root of the project folder of `backend_fastapi`.
 
 We have the following tables:
 - words - stored vocabulary words
   - id integer
-  - japasese string
+  - japanese string
   - romaji string
   - english string
   - parts json
-- words_groups - join table for words and groups many-to-many
+- words_groups - join table for words and groups (many-to-many)
   - id integer
   - word_id integer
   - group_id integer
@@ -58,7 +55,7 @@ We have the following tables:
   - group_id integer
   - created_at datetime
   - study_activity_id integer
-- study_activities - a specific study activity, linking a study session to group
+- study_activities - a specific study activity, linking a study session to a group
   - id integer
   - study_session_id integer
   - group_id integer
@@ -81,27 +78,24 @@ Returns information about the most recent study session.
   "group_id": 456,
   "created_at": "2025-02-08T17:20:23-05:00",
   "study_activity_id": 789,
-  "group_id": 456,
   "group_name": "Basic Greetings"
 }
 ```
 
 ### GET /api/dashboard/study_progress
 Returns study progress statistics.
-Please note that the frontend will determine progress bar basedon total words studied and total available words.
+Please note that the frontend will determine the progress bar based on total words studied and total available words.
 
 #### JSON Response
-
 ```json
 {
   "total_words_studied": 3,
-  "total_available_words": 124,
+  "total_available_words": 124
 }
 ```
 
 ### GET /api/dashboard/quick-stats
-
-Returns quick overview statistics.
+Returns a quick overview of statistics.
 
 #### JSON Response
 ```json
@@ -389,17 +383,15 @@ Returns quick overview statistics.
 
 ## Task Runner Tasks
 
-Lets list out possible tasks we need for our lang portal.
-
 ### Initialize Database
-This task will initialize the sqlite database called `words.db
+This task will initialize the SQLite database called `words.db`.
 
 ### Migrate Database
-This task will run a series of migrations sql files on the database
+This task will run a series of migration SQL files on the database.
 
 Migrations live in the `migrations` folder.
 The migration files will be run in order of their file name.
-The file names should looks like this:
+The file names should look like this:
 
 ```sql
 0001_init.sql
@@ -407,18 +399,18 @@ The file names should looks like this:
 ```
 
 ### Seed Data
-This task will import json files and transform them into target data for our database.
+This task will import JSON files and transform them into target data for our database.
 
 All seed files live in the `seeds` folder.
 
-In our task we should have DSL to specific each seed file and its expected group word name.
+In our task, we should have a DSL to specify each seed file and its expected group word name.
 
 ```json
 [
   {
     "kanji": "払う",
     "romaji": "harau",
-    "english": "to pay",
+    "english": "to pay"
   },
   ...
 ]
