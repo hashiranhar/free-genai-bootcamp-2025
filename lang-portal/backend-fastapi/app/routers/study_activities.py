@@ -20,7 +20,7 @@ def get_study_activities(skip: int = 0, limit: int = 100, db: Session = Depends(
         "items": [
             {
                 "id": activity.id,
-                "name": f"Activity {activity.id}",  # Replace with actual name if available
+                "name": activity.name,  # Use actual activity name
                 "thumbnail_url": None,  # Add logic for thumbnail URL if needed
                 "description": None  # Add logic for description if needed
             }
@@ -40,7 +40,7 @@ def get_study_activity(activity_id: int, db: Session = Depends(get_db)):
     if activity:
         return {
             "id": activity.id,
-            "name": f"Activity {activity.id}",  # Replace with actual name if available
+            "name": activity.name,  # Use actual activity name
             "thumbnail_url": None,  # Add logic for thumbnail URL if needed
             "description": None  # Add logic for description if needed
         }

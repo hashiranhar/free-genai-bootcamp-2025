@@ -76,7 +76,7 @@ def get_group_study_sessions(group_id: int, skip: int = 0, limit: int = 100, db:
         "items": [
             {
                 "id": session.id,
-                "activity_name": db.query(StudyActivity).filter(StudyActivity.id == session.study_activity_id).first().name,
+                "activity_name": db.query(StudyActivity).filter(StudyActivity.id == session.study_activity_id).first().name,  # Use actual activity name
                 "group_name": db.query(Group).filter(Group.id == session.group_id).first().name,
                 "start_time": session.created_at,
                 "end_time": session.updated_at,  # Assuming updated_at represents the end time

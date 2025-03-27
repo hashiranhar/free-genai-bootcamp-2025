@@ -30,3 +30,9 @@ INSERT INTO words_groups (id, word_id, group_id) VALUES
 (8, 8, 3), -- "山" belongs to "Nature"
 (9, 9, 3), -- "川" belongs to "Nature"
 (10, 10, 3); -- "空" belongs to "Nature"
+
+-- Insert data into the `study_activities` table
+INSERT INTO study_activities (id, study_session_id, name, group_id, created_at) VALUES
+(1, NULL, 'Vocabulary Quiz', 1, '2025-01-01 00:00:00'),
+(2, NULL, 'Flashcards', 2, '2025-01-02 00:00:00'),
+(3, NULL, 'Listening Practice', 3, '2025-01-03 00:00:00');

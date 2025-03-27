@@ -32,6 +32,7 @@ class StudyActivity(Base):
     __tablename__ = "study_activities"
     id = Column(Integer, primary_key=True, index=True)
     study_session_id = Column(Integer, ForeignKey("study_sessions.id"), nullable=True)
+    name = Column(String, nullable=False)  # Added name column
     group_id = Column(Integer, ForeignKey("groups.id"), nullable=False)
     created_at = Column(DateTime, nullable=False)
 
