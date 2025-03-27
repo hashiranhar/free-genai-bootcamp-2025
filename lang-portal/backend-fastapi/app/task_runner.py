@@ -2,6 +2,7 @@ import os
 import sys
 import json
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import text  # Import text for raw SQL execution
 
 # Add the project root directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -15,23 +16,17 @@ def initialize_database():
     print("Database initialized.")
 
 def seed_data():
-    """Seed the database with initial data."""
-    seed_file_path = os.path.join(os.path.dirname(__file__), "../db/seeds/words.json")
-    with open(seed_file_path, "r") as file:
-        seed_data = json.load(file)
-
+    """Seed the database with initial data from words.sql."""
+    seed_file_path = os.path.join(os.path.dirname(__file__), "../db/seeds/words.sql")
     db: Session = SessionLocal()
     try:
-        for item in seed_data:
-            word = Word(
-                japanese=item["kanji"],
-                romaji=item["romaji"],
-                english=item["english"],
-                parts=item.get("parts", None)
-            )
-            db.add(word)
+        with open(seed_file_path, "r") as file:
+            sql_script = file.read()
+        for statement in sql_script.strip().split(";"):  # Split the script into individual statements
+            if statement.strip():  # Skip empty statements
+                db.execute(text(statement.strip()))  # Execute each statement
         db.commit()
-        print("Database seeded with initial data.")
+        print("Database seeded with initial data from words.sql.")
     finally:
         db.close()
 
