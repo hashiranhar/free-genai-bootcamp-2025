@@ -1,0 +1,20 @@
+[
+  {
+    "kanji": "払う",
+    "romaji": "harau",
+    "english": "to pay",
+    "parts": ["verb"]
+  },
+  {
+    "kanji": "食べる",
+    "romaji": "taberu",
+    "english": "to eat",
+    "parts": ["verb"]
+  },
+  {
+    "kanji": "猫",
+    "romaji": "neko",
+    "english": "cat",
+    "parts": ["noun"]
+  }
+]
