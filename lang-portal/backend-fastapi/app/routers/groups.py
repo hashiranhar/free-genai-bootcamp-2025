@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.models.database import SessionLocal
-from app.models.models import Group, WordGroup, Word, StudySession
+from app.models.models import Group, WordGroup, Word, StudySession, WordReviewItem, StudyActivity  # Ensure WordReviewItem is imported
 
 router = APIRouter()
 
@@ -76,10 +76,10 @@ def get_group_study_sessions(group_id: int, skip: int = 0, limit: int = 100, db:
         "items": [
             {
                 "id": session.id,
-                "activity_name": db.query(StudyActivity).filter(StudyActivity.id == session.study_activity_id).first().id,
+                "activity_name": db.query(StudyActivity).filter(StudyActivity.id == session.study_activity_id).first().name,
                 "group_name": db.query(Group).filter(Group.id == session.group_id).first().name,
                 "start_time": session.created_at,
-                "end_time": None,  # Add logic to calculate end time if needed
+                "end_time": session.updated_at,  # Assuming updated_at represents the end time
                 "review_items_count": db.query(WordReviewItem).filter(WordReviewItem.study_session_id == session.id).count()
             }
             for session in sessions
@@ -93,21 +93,27 @@ def get_group_study_sessions(group_id: int, skip: int = 0, limit: int = 100, db:
     }
 
 @router.get("/{id}/words")
-async def get_group_words(id: int):
+def get_group_words_hardcoded(id: int, db: Session = Depends(get_db)):
+    group = db.query(Group).filter(Group.id == id).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+    word_ids = db.query(WordGroup.word_id).filter(WordGroup.group_id == id).all()
+    words = db.query(Word).filter(Word.id.in_([word_id[0] for word_id in word_ids])).all()
     return {
         "items": [
             {
-                "japanese": "こんにちは",
-                "romaji": "konnichiwa",
-                "english": "hello",
-                "correct_count": 5,
-                "wrong_count": 2
+                "japanese": word.japanese,
+                "romaji": word.romaji,
+                "english": word.english,
+                "correct_count": db.query(WordReviewItem).filter(WordReviewItem.word_id == word.id, WordReviewItem.correct == True).count(),
+                "wrong_count": db.query(WordReviewItem).filter(WordReviewItem.word_id == word.id, WordReviewItem.correct == False).count()
             }
+            for word in words
         ],
         "pagination": {
             "current_page": 1,
             "total_pages": 1,
-            "total_items": 20,
-            "items_per_page": 100
+            "total_items": len(words),
+            "items_per_page": len(words)
         }
     }

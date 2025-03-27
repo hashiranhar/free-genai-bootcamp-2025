@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.models.database import SessionLocal
 from app.models.models import StudyActivity, StudySession, Group
+from datetime import datetime
 
 router = APIRouter()
 
@@ -48,13 +49,35 @@ def get_study_activity(activity_id: int, db: Session = Depends(get_db)):
 @router.post("/")
 def create_study_activity(group_id: int, db: Session = Depends(get_db)):
     group = db.query(Group).filter(Group.id == group_id).first()
-    if group:
-        new_activity = StudyActivity(
-            study_session_id=None,  # Add logic to link to a session if needed
-            group_id=group.id,
-            created_at=None  # Add logic to set the current timestamp
-        )
-        db.add(new_activity)
-        db.commit()
-        return {"id": new_activity.id, "group_id": group.id}
-    return {"error": "Group not found"}
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    # Step 1: Create StudyActivity (no session yet)
+    new_activity = StudyActivity(
+        group_id=group.id,
+        created_at=datetime.utcnow()
+    )
+    db.add(new_activity)
+    db.commit()
+    db.refresh(new_activity)
+
+    # Step 2: Create StudySession and link to the activity
+    new_session = StudySession(
+        group_id=group.id,
+        created_at=datetime.utcnow(),
+        study_activity_id=new_activity.id
+    )
+    db.add(new_session)
+    db.commit()
+    db.refresh(new_session)
+
+    # Step 3: Now link the session back to the activity
+    new_activity.study_session_id = new_session.id
+    db.commit()
+
+    return {
+        "id": new_activity.id,
+        "group_id": group.id,
+        "study_session_id": new_session.id
+    }
+

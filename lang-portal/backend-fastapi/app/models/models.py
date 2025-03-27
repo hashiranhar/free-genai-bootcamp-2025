@@ -26,12 +26,12 @@ class StudySession(Base):
     id = Column(Integer, primary_key=True, index=True)
     group_id = Column(Integer, ForeignKey("groups.id"), nullable=False)
     created_at = Column(DateTime, nullable=False)
-    study_activity_id = Column(Integer, ForeignKey("study_activities.id"), nullable=False)
+    study_activity_id = Column(Integer, ForeignKey("study_activities.id"), nullable=True)
 
 class StudyActivity(Base):
     __tablename__ = "study_activities"
     id = Column(Integer, primary_key=True, index=True)
-    study_session_id = Column(Integer, ForeignKey("study_sessions.id"), nullable=False)
+    study_session_id = Column(Integer, ForeignKey("study_sessions.id"), nullable=True)
     group_id = Column(Integer, ForeignKey("groups.id"), nullable=False)
     created_at = Column(DateTime, nullable=False)
 
