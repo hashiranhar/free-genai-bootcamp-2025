@@ -1,19 +1,7 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from app.routers import dashboard, words, groups, study_sessions, study_activities
 
 app = FastAPI()
-
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allow requests from the frontend
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 
 # Register routers
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])

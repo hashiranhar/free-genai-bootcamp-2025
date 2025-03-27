@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.database import SessionLocal
 from app.models.models import Word, WordReviewItem
 
-router = APIRouter()  
+router = APIRouter()
 
 def get_db():
     db = SessionLocal()
@@ -34,7 +34,7 @@ def get_words(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
         }
     }
 
-@router.get("/{word_id}/")
+@router.get("/{word_id}")
 def get_word(word_id: int, db: Session = Depends(get_db)):
     word = db.query(Word).filter(Word.id == word_id).first()
     if word:
