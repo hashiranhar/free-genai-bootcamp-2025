@@ -52,27 +52,27 @@ def create_study_activity(group_id: int, db: Session = Depends(get_db)):
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
 
-    # Step 1: Create StudyActivity (no session yet)
+    # Create the study session first
+    new_session = StudySession(
+        group_id=group.id,
+        created_at=datetime.utcnow()
+    )
+    db.add(new_session)
+    db.commit()
+    db.refresh(new_session)
+
+    # Now create the activity and link it to the session
     new_activity = StudyActivity(
         group_id=group.id,
+        study_session_id=new_session.id,
         created_at=datetime.utcnow()
     )
     db.add(new_activity)
     db.commit()
     db.refresh(new_activity)
 
-    # Step 2: Create StudySession and link to the activity
-    new_session = StudySession(
-        group_id=group.id,
-        created_at=datetime.utcnow(),
-        study_activity_id=new_activity.id
-    )
-    db.add(new_session)
-    db.commit()
-    db.refresh(new_session)
-
-    # Step 3: Now link the session back to the activity
-    new_activity.study_session_id = new_session.id
+    # Update session to point to the activity (optional, if needed)
+    new_session.study_activity_id = new_activity.id
     db.commit()
 
     return {
@@ -80,4 +80,3 @@ def create_study_activity(group_id: int, db: Session = Depends(get_db)):
         "group_id": group.id,
         "study_session_id": new_session.id
     }
-
