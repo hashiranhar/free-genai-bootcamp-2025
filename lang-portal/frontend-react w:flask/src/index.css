@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+}
+
+@layer base {
+  :root {
+    --background: 255, 255, 255; /* Light theme background */
+    --foreground: 0, 0, 0; /* Light theme text */
+
+    --primary: 102, 51, 153; /* Purple */
+    --primary-foreground: 255, 255, 255; /* White text on purple */
+
+    --secondary: 243, 244, 246; /* Light gray */
+    --secondary-foreground: 31, 41, 55; /* Dark gray text */
+
+    --muted: 229, 231, 235; /* Muted gray */
+    --muted-foreground: 107, 114, 128; /* Muted text */
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 17, 24, 39; /* Dark theme background */
+    --foreground: 255, 255, 255; /* White text */
+
+    --primary: 76, 0, 153; /* Darker purple */
+    --primary-foreground: 255, 255, 255; /* White text on purple */
+
+    --secondary: 31, 41, 55; /* Dark gray */
+    --secondary-foreground: 243, 244, 246; /* Light gray text */
+
+    --muted: 55, 65, 81; /* Muted dark gray */
+    --muted-foreground: 156, 163, 175; /* Muted text */
+  }
+
+  body {
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))];
+  }
+}
+
+.bg-purple-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(102, 51, 153, var(--tw-bg-opacity)); /* Purple */
+}
+
+.bg-purple-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(76, 0, 153, var(--tw-bg-opacity)); /* Darker Purple */
+}
+
+.bg-purple-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(51, 0, 102, var(--tw-bg-opacity)); /* Darkest Purple */
+}
+
+.text-white {
+  color: rgba(255, 255, 255, 1);
+}
+
+.text-gray-800 {
+  color: rgba(31, 41, 55, 1);
+}
+
+.hover\:bg-gray-100:hover {
+  background-color: rgba(243, 244, 246, 1);
+}
